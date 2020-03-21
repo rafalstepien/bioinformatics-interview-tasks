@@ -1,5 +1,8 @@
 #!/bin/python3
 
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+
 # ---------------------------------- TASK 1 ----------------------------------
 def open_seq(path):
     """
@@ -78,14 +81,42 @@ def translate(correct_sequences):
     :param correct_sequences: Dictionary with correct DNA sequences
     :return: Dictionary with amino-acid sequences after translating given DNA/mRNA sequences
     """
-    pass
+    translated_dictionary = {}
+    for sequence_ID in correct_sequences.keys():
+        if "ATG" in correct_sequences[sequence_ID]:
+            translated_seq = Seq(correct_sequences[sequence_ID], IUPAC.unambiguous_dna).translate()
+            translated_dictionary[sequence_ID] = translated_seq
+    return translated_dictionary
 
 
-def save_to_fasta():
+def save_to_fasta(complementary, mRNA, translated):
     """
-    :return: Save output files to FASTA file
+    Saves output to three FASTA files
+
+    :param complementary: Dictionary of complementary sequences with ID's
+    :param mRNA: Dictionary of complementary sequences with ID's
+    :param translated: Dictionary of complementary sequences with ID's
     """
-    pass
+    with open("complementary.fasta", "w") as fasta:
+        for sequence_ID in complementary.keys():
+            fasta.write(sequence_ID + "\n")
+            fasta.write(complementary[sequence_ID])
+            fasta.write("\n\n")
+
+    with open("mRNA.fasta", "w") as fasta:
+        for sequence_ID in mRNA.keys():
+            fasta.write(sequence_ID + "\n")
+            fasta.write(mRNA[sequence_ID])
+            fasta.write("\n\n")
+
+    with open("translated.fasta", "w") as fasta:
+        for sequence_ID in translated.keys():
+            fasta.write(sequence_ID + "\n")
+            fasta.write(str(translated[sequence_ID]))
+            fasta.write("\n\n")
+
+
+
 
 
 if __name__ == "__main__":
@@ -95,3 +126,5 @@ if __name__ == "__main__":
     correct_sequences_dictionary = get_correct_sequences(seq_dictionary)
     complementary_sequences_dictionary = get_reverse_complementary(correct_sequences_dictionary)
     mRNA_sequences_dictionary = get_mRNA(correct_sequences_dictionary)
+    translated_sequences_dictionary = translate(correct_sequences_dictionary)
+    save_to_fasta(complementary_sequences_dictionary, mRNA_sequences_dictionary, translated_sequences_dictionary)
